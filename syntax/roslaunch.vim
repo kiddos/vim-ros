@@ -6,29 +6,36 @@
 " Read YAML syntax rules that will be used to highlight code inside <rosparam>
 " tags. Note that we do this before reading XML rules to make sure that YAML
 " rules have lower priority (important for the definition of rosparamTag region)
-syntax include @YAML syntax/yaml.vim
 
-unlet b:current_syntax
+if exists("b:current_syntax")
+  finish
+endif
 
 let g:xml_syntax_folding=1
-runtime! syntax/xml.vim
+
+syn match roslaunchTag "<[^>]\+>"
+
+syn keyword roslaunchTagName  launch containedin=roslaunchTag
+syn keyword roslaunchTagName  node containedin=roslaunchTag
+syn keyword roslaunchTagName  machine containedin=roslaunchTag
+syn keyword roslaunchTagName  include containedin=roslaunchTag
+syn keyword roslaunchTagName  remap containedin=roslaunchTag
+syn keyword roslaunchTagName  env containedin=roslaunchTag
+syn keyword roslaunchTagName  param containedin=roslaunchTag
+syn keyword roslaunchTagName  rosparam containedin=roslaunchTag
+syn keyword roslaunchTagName  group containedin=roslaunchTag
+syn keyword roslaunchTagName  test containedin=roslaunchTag
+syn keyword roslaunchTagName  arg containedin=roslaunchTag
 
 " Substitution args
-syn match rosSubArg "\$(arg .\{-})" containedin=xmlString,rosparamTag
-syn match rosSubFind "\$(find .\{-})" containedin=xmlString,rosparamTag
-syn match rosSubAnon "\$(anon .\{-})" containedin=xmlString,rosparamTag
+syn match rosSubArg "\$(arg .\{-})" containedin=roslaunchTag
+syn match rosSubFind "\$(find .\{-})" containedin=roslaunchTag
+syn match rosSubAnon "\$(anon .\{-})" containedin=roslaunchTag
 
+hi link roslaunchTag Identifier
+hi link roslaunchTagName Keyword
 hi link rosSubArg Macro
 hi link rosSubFind Macro
 hi link rosSubAnon Macro
-
-" YAML highlighting in <rosparam> tags
-syn region rosparamTag
-        \ start=#\(<rosparam[^>]\{-}>\)#
-        \ end=#\(</rosparam>\)#
-        \ fold
-        \ contains=xmlTag,xmlEndTag,@YAML
-        \ keepend
-syn cluster xmlRegionHook add=rosparamTag
 
 let b:current_syntax = "roslaunch"
